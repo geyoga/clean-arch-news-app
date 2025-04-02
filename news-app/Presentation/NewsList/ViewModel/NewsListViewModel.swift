@@ -33,11 +33,11 @@ final class DefaultNewsListViewModel: NewsListViewModel {
 
     private let contentSubject = CurrentValueSubject<NewsListContentViewModel, Never>(.emptyData)
     private let errorSubject = CurrentValueSubject<String, Never>("")
-    
+
     var content: AnyPublisher<NewsListContentViewModel, Never> {
         contentSubject.eraseToAnyPublisher()
     }
-    
+
     var error: AnyPublisher<String, Never> {
         errorSubject.eraseToAnyPublisher()
     }
@@ -52,7 +52,7 @@ final class DefaultNewsListViewModel: NewsListViewModel {
 
     private func reload() {
         resetData()
-        loadData()
+        Task { await loadData() }
     }
 
     private func resetData() {
@@ -60,32 +60,28 @@ final class DefaultNewsListViewModel: NewsListViewModel {
         contentSubject.send(.emptyData)
     }
 
+    @MainActor
     private func loadData() {
         contentSubject.send(.loading)
         Task {
-            await fetchData()
+            do {
+                let result = try await newsListUsesCase.fetchNewsList()
+                update(result)
+            } catch {
+                handleError(error)
+            }
         }
     }
-    
-    private func fetchData() async {
-        do {
-            let items = try await newsListUsesCase.fetchNewsList()
-            update(items)
-        } catch {
-            
-        }
-    }
-    
 
     private func handleError(_ error: Error) {
-        
+        print(error.localizedDescription)
     }
 
     private func update(_ news: NewsPage) {
         items = news.items.map({ NewsListItemViewModel(news: $0) })
         updateContent()
     }
-    
+
     private func updateContent() {
         contentSubject.send(items.isEmpty ? .emptyData : .items(items))
     }
@@ -106,6 +102,52 @@ extension DefaultNewsListViewModel {
         var item = items[index]
         item.isExpanded.toggle()
         items[index] = item
+        contentSubject.send(.items(items))
+    }
+}
+
+final class MockNewsListViewModel: NewsListViewModel {
+
+    // MARK: - Properties
+
+    private let contentSubject = CurrentValueSubject<NewsListContentViewModel, Never>(.emptyData)
+    private let errorSubject = CurrentValueSubject<String, Never>("")
+
+    var content: AnyPublisher<NewsListContentViewModel, Never> {
+        contentSubject.eraseToAnyPublisher()
+    }
+
+    var error: AnyPublisher<String, Never> {
+        errorSubject.eraseToAnyPublisher()
+    }
+
+    private(set) var items: [NewsListItemViewModel] = []
+    
+    // MARK: - Methods
+    
+    func viewDidLoad() {
+        loadMockData()
+    }
+    
+    func viewDidRefresh() {
+        loadMockData()
+    }
+    
+    func viewDidSelectItem(at index: Int) {
+        guard index < items.count else { return }
+        var item = items[index]
+        item.isExpanded.toggle()
+        items[index] = item
+        contentSubject.send(.items(items))
+    }
+
+    // MARK: - Mock Data
+
+    private func loadMockData() {
+        items = [
+            NewsListItemViewModel(news: .init(id: 1, title: "Mock News 1", source: .init(name: "Mocker News ID"), description: "Hello World")),
+            NewsListItemViewModel(news: .init(id: 2, title: "Mock News 2", source: .init(name: "Mocker News NA"), description: "Hello World Hello World Hello World Hello World"))
+        ]
         contentSubject.send(.items(items))
     }
 }
