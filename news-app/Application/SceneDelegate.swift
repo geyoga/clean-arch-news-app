@@ -17,8 +17,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
-        let mockViewModel = MockNewsListViewModel()
-        let controller = NewsListViewController(viewModel: mockViewModel)
+        let useCase = MockNewsListUseCase()
+        let viewModel = DefaultNewsListViewModel(newsListUsesCase: useCase)
+        let controller = NewsListViewController(viewModel: viewModel)
         let navigation = UINavigationController(rootViewController: controller)
         window.rootViewController = navigation
         self.window = window

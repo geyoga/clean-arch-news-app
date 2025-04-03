@@ -108,12 +108,11 @@ final class NewsListTableViewController: UITableViewController {
             snapshot.appendItems(loadingItems, toSection: .main)
         }
 
-        self.tableViewDataSource.apply(snapshot, animatingDifferences: true)
+        self.tableViewDataSource.apply(snapshot, animatingDifferences: false)
     }
 
     @objc private func refresh(_ sender: Any) {
         self.viewModel.viewDidRefresh()
-//        self.refreshControl?.endRefreshing()
     }
 }
 
