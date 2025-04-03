@@ -87,7 +87,7 @@ final class NewsListViewController: UIViewController {
         alert.addAction(
             UIAlertAction(
                 title: NSLocalizedString(
-                    "Ok",
+                    "OK",
                     comment: ""
                 ),
                 style: UIAlertAction.Style.default,

@@ -15,6 +15,7 @@ enum NetworkError: Error {
     case unableToDecode
     case notConnected
     case generic
+    case genericWith(Error)
     var description: String {
         switch self {
         case .badURL: return "Bad URL"
@@ -25,6 +26,7 @@ enum NetworkError: Error {
         case .unableToDecode: return "Response can't be decoded"
         case .notConnected: return "The internet connection appears to be offline"
         case .generic: return "Something went wrong"
+        case .genericWith(let error): return "Something went wrong with \(error.localizedDescription)"
         }
     }
 
@@ -33,7 +35,7 @@ enum NetworkError: Error {
         switch code {
         case .notConnectedToInternet: return .notConnected
         case .cannotFindHost: return .badHostname
-        default: return .generic
+        default: return .genericWith(error)
         }
     }
 }
