@@ -14,6 +14,11 @@ final class NewsListViewController: UIViewController {
 
     private var viewModel: NewsListViewModel
     private var cancellables: Set<AnyCancellable> = .init()
+    private lazy var tableController: NewsListTableViewController = {
+        let controller = NewsListTableViewController(viewModel: viewModel)
+
+        return controller
+    }()
     
     // MARK: - Life Cycles
 
@@ -38,10 +43,17 @@ final class NewsListViewController: UIViewController {
     // MARK: - Helpers
 
     private func bind(to viewModel: NewsListViewModel) {
+
         viewModel.content
             .receive(on: DispatchQueue.main)
-            .sink { data in
-                print(data)
+            .sink { [weak self] data in
+                self?.updateItems()
+            }.store(in: &cancellables)
+
+        viewModel.error
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] error in
+                self?.showError(error)
             }.store(in: &cancellables)
     }
 
@@ -51,6 +63,37 @@ final class NewsListViewController: UIViewController {
     }
 
     private func setupViewLayout() {
-        view.backgroundColor = .white
+        addChild(tableController)
+        tableController.view.frame = view.bounds
+        view.addSubview(tableController.view)
+        tableController.didMove(toParent: self)
+    }
+
+    private func updateItems() {
+        tableController.reload()
+    }
+
+    private func showError(_ error: String) {
+        guard !error.isEmpty else { return }
+        
+        let alert = UIAlertController(
+            title: NSLocalizedString(
+                "Error",
+                comment: ""
+            ),
+            message: error,
+            preferredStyle: .alert
+        )
+        alert.addAction(
+            UIAlertAction(
+                title: NSLocalizedString(
+                    "Ok",
+                    comment: ""
+                ),
+                style: UIAlertAction.Style.default,
+                handler: nil
+            )
+        )
+        present(alert, animated: true)
     }
 }

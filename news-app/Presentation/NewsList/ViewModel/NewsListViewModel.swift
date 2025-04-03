@@ -130,7 +130,9 @@ final class MockNewsListViewModel: NewsListViewModel {
     }
     
     func viewDidRefresh() {
-        loadMockData()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
+            self.loadMockData()
+        })
     }
     
     func viewDidSelectItem(at index: Int) {
@@ -138,7 +140,7 @@ final class MockNewsListViewModel: NewsListViewModel {
         var item = items[index]
         item.isExpanded.toggle()
         items[index] = item
-        contentSubject.send(.items(items))
+        print(items[index].news.title)
     }
 
     // MARK: - Mock Data
@@ -146,7 +148,8 @@ final class MockNewsListViewModel: NewsListViewModel {
     private func loadMockData() {
         items = [
             NewsListItemViewModel(news: .init(id: 1, title: "Mock News 1", source: .init(name: "Mocker News ID"), description: "Hello World")),
-            NewsListItemViewModel(news: .init(id: 2, title: "Mock News 2", source: .init(name: "Mocker News NA"), description: "Hello World Hello World Hello World Hello World"))
+            NewsListItemViewModel(news: .init(id: 2, title: "Mock News 2", source: .init(name: "Mocker News NA"), description: "Hello World Hello World Hello World Hello World")),
+            NewsListItemViewModel(news: .init(id: 3, title: "Mock News 3", source: .init(name: "Mocker News SA"), description: "Hello World Hello World"))
         ]
         contentSubject.send(.items(items))
     }
