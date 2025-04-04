@@ -14,16 +14,16 @@ final class NewsListItemCell: UITableViewCell {
 
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-            .font(.systemFont(ofSize: 12, weight: .medium))
-            .textColor(.systemBlue)
+            .font(.systemFont(ofSize: 18, weight: .bold))
+            .textColor(.black)
             .align(.left)
-            .numberOfLines(2)
+            .numberOfLines(-1)
 
         return label
     }()
     private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
-            .font(.systemFont(ofSize: 10, weight: .regular))
+            .font(.systemFont(ofSize: 12, weight: .regular))
             .textColor(.systemGray)
             .align(.left)
             .numberOfLines(4)
@@ -63,7 +63,7 @@ final class NewsListItemCell: UITableViewCell {
         }
         descriptionLabel.snp.makeConstraints { make in
             make.leading.trailing.equalToSuperview().inset(16)
-            make.top.equalTo(titleLabel.snp.bottom).inset(-12)
+            make.top.equalTo(titleLabel.snp.bottom).inset(-8)
             make.bottom.equalToSuperview().inset(16)
         }
     }

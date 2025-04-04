@@ -16,8 +16,8 @@ final class DefaultNewsListReposity: NewsListRepository {
     }
 
     func fetchNewsList() async throws -> NewsPage {
-        let request = HeadlinesRequestQuery(query: "", category: "")
-        let endpoint = APIEndpoints.News.getTopHeadlines(requestQuery: request)
+        let request = NewsRequestQuery(query: "ios")
+        let endpoint = APIEndpoints.News.getAll(requestQuery: request)
         return try await dataTransferService.request(with: endpoint).toDomain()
     }
 
