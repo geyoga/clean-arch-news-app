@@ -15,11 +15,17 @@ final class SecretsManager {
     }
 
     func getKeyandSaveToKeychain(key: APIKey) -> String {
-        if let apiKey = getAPIKey(for: key) {
-            saveToKeychain(key: key.rawValue, value: apiKey)
-            return getFromKeychain(key: key.rawValue) ?? ""
+        var secretKey: String = ""
+        if let resultKeychain = getFromKeychain(key: key) {
+            secretKey = resultKeychain
+        } else {
+            if let resultSecrets = getAPIKey(for: key) {
+                saveToKeychain(key: key, value: resultSecrets)
+                secretKey = resultSecrets
+            }
         }
-        return ""
+
+        return secretKey
     }
 
     private func getAPIKey(for name: APIKey) -> String? {
@@ -32,12 +38,12 @@ final class SecretsManager {
         return nil
     }
 
-    private func saveToKeychain(key: String, value: String) {
+    private func saveToKeychain(key: APIKey, value: String) {
         let data = value.data(using: .utf8)!
 
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: key,
+            kSecAttrAccount as String: key.rawValue,
             kSecValueData as String: data
         ]
 
@@ -51,10 +57,10 @@ final class SecretsManager {
         }
     }
 
-    private func getFromKeychain(key: String) -> String? {
+    private func getFromKeychain(key: APIKey) -> String? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: key,
+            kSecAttrAccount as String: key.rawValue,
             kSecReturnData as String: kCFBooleanTrue!,
             kSecMatchLimit as String: kSecMatchLimitOne
         ]
