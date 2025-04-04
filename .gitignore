@@ -1,0 +1,21 @@
+# Ignore Xcode build files
+DerivedData/
+build/
+*.xcworkspace
+
+# Ignore User-Specific Xcode Settings
+xcuserdata/
+
+# Ignore API keys and secrets
+Secrets.plist
+Config.xcconfig
+
+# Ignore CocoaPods Dependencies
+Pods/
+Podfile.lock
+
+# Ignore Swift Package Manager
+Package.resolved
+
+# Ignore Secrets
+Resources/Secrets.plist
