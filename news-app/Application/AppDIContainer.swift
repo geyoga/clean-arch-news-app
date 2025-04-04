@@ -16,9 +16,14 @@ final class AppDIContainer {
     // MARK: - App Network
 
     lazy var apiDataTransferService: DataTransferService = {
+        
+        let secretKey = SecretsManager()
+        let headers = [HTTP.authorization: secretKey.getKeyandSaveToKeychain(key: .news)]
+
         let config = ApiDataNetworkConfig(
             baseURL: appConfiguration.apiBaseURL,
-            headers: appConfiguration.header)
+            headers: headers
+        )
 
         let apiDataNetwork = DefaultNetworkService(
             config: config,
