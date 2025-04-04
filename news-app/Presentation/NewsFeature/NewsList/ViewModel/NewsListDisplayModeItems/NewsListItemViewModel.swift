@@ -5,12 +5,14 @@
 //  Created by Georgius Yoga on 28/3/25.
 //
 
+import Foundation
+
 struct NewsListItemViewModel: Hashable {
     struct NewsListSourceViewModel: Hashable {
         let name: String
     }
     struct NewsItemViewModel: Hashable {
-        let id: Int
+        let id: UUID
         let title: String
         let source: NewsListSourceViewModel
         let description: String

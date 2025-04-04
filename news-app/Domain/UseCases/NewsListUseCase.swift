@@ -23,20 +23,3 @@ final class DefaultNewsListUseCase: NewsListUseCase {
         try await repository.fetchNewsList()
     }
 }
-
-final class MockNewsListUseCase: NewsListUseCase {
-    var response: NewsPage = .init(items: [
-        News(id: 0, title: "Hello World 1", description: "Ini Test kebutuhan testing", imageUrl: "", source: .init(id: "AAA", name: "AAA Studio")),
-        News(id: 1, title: "Hello World 2", description: "Ini Test kebutuhan testing", imageUrl: "", source: .init(id: "AAA", name: "AAA Studio")),
-        News(id: 2, title: "Hello World 3", description: "Ini Test kebutuhan testing", imageUrl: "", source: .init(id: "AAA", name: "AAA Studio")),
-        News(id: 3, title: "Hello World 4", description: "Ini Test kebutuhan testing", imageUrl: "", source: .init(id: "AAA", name: "AAA Studio"))
-    ])
-    var error: Error?
-    func fetchNewsList() async throws -> NewsPage {
-        if let error {
-            throw error
-        }
-        return response
-    }
-
-}

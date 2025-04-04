@@ -30,7 +30,11 @@ final class DefaultNetworkService: NetworkService {
     private let sessionManager: NetworkSessionManager
     private let logger: NetworkLogger
 
-    init(config: NetworkConfigurable, sessionManager: NetworkSessionManager, logger: NetworkLogger) {
+    init(
+        config: NetworkConfigurable,
+        sessionManager: NetworkSessionManager = DefaultNetworkSessionManager(),
+        logger: NetworkLogger
+    ) {
         self.config = config
         self.sessionManager = sessionManager
         self.logger = logger
@@ -62,7 +66,7 @@ final class DefaultNetworkSessionManager: NetworkSessionManager {
         guard let httpRensponse = response as? HTTPURLResponse else {
             throw NetworkError.genericWith(NSError(domain: "Network", code: -1))
         }
-        return (data, response)
+        return (data, httpRensponse)
     }
 }
 

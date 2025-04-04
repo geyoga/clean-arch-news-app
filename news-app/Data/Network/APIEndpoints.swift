@@ -9,5 +9,33 @@ import Foundation
 
 struct APIEndpoints {
 
-    static func  getNewsList() -> Endpoint<
+    enum News {
+
+        static func getTopHeadlines(requestQuery: HeadlinesRequestQuery) -> Endpoint<NewsResponseDto> {
+
+            return Endpoint(
+                path: "v2/top-headlines",
+                method: .get,
+                queryParametersEncodable: requestQuery
+            )
+        }
+        static func getAll(requestQuery: NewsRequestQuery) -> Endpoint<NewsResponseDto> {
+
+            return Endpoint(
+                path: "v2/everything",
+                method: .get,
+                queryParametersEncodable: requestQuery
+            )
+        }
+        static func getSources(requestQuery: SourcesRequestQuery) -> Endpoint<SourceResponseDto> {
+
+            return Endpoint(
+                path: "v2/top-headlines/sources",
+                method: .get,
+                queryParametersEncodable: requestQuery
+            )
+        }
+
+    }
+
 }

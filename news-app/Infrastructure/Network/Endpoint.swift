@@ -16,6 +16,20 @@ enum HTTPMethodType: String {
     case delete  = "DELETE"
 }
 
+enum HTTP {
+    static let contentType = "Content-Type"
+    static let applicationJSON = "application/json"
+    static let authorization = "Authorization"
+    static let formUrlEncoded = "application/x-www-form-urlencoded"
+    static let connection = "Connection"
+    static let keepAlive = "Keep-Alive"
+    static let multipartFormData = "multipart/form-data"
+    static let contentLength = "Content-Length"
+    static let contenDispositionFormData = "Content-Disposition: form-data"
+    static let accept = "Accept"
+    static let acceptLanguage = "Accept-Language"
+}
+
 enum BodyEncoding {
     case jsonSerializationData
     case stringEncodingAscii

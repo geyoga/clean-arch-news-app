@@ -39,7 +39,7 @@ final class DefaultDataTransferService: DataTransferService {
     private let errorLogger: DataTransferErrorLogger
 
     init(
-        networkService: NetworkService,
+        with networkService: NetworkService,
         errorResolver: DataTransferErrorResolver = DefaultDataTransferErrorResolver(),
         errorLogger: DataTransferErrorLogger = DefaultDataTransferErrorLogger()
     ) {
