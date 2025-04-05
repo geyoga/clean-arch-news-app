@@ -102,7 +102,7 @@ final class CoreDataImageStorage: ImageStorage {
         }
     }
 
-    func save(imageData: Data, for urlPath: String) {
+    func save(imageData: Data, for urlPath: String) async {
         coreDataStorage.performBackgroundTask { context in
             do {
                 self.deleteImage(for: urlPath, in: context)

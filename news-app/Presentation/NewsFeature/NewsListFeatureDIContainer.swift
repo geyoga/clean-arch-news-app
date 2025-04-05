@@ -16,6 +16,17 @@ final class NewsListFeatureDIContainer: NewsListFlowCoordinatorDependencies {
     
     private let dependencies: Dependencies
 
+    // MARK: - Persistent Storage
+
+    lazy var newsListStorage: NewsListStorage = CoreDataNewsListStorage(
+        currentTime: { Date() },
+        config: .init(
+            maxAliveTimeInSecond: dependencies
+                .appConfiguration
+                .cacheMaxAliveTimeInSecond
+        )
+    )
+
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
     }
@@ -37,7 +48,10 @@ final class NewsListFeatureDIContainer: NewsListFlowCoordinatorDependencies {
 
     // MARK: - Repository
     private func makeNewsListRepository() -> NewsListRepository {
-        DefaultNewsListReposity(dataTransferService: dependencies.apiDataTransferService)
+        DefaultNewsListReposity(
+            dataTransferService: dependencies.apiDataTransferService,
+            cache: newsListStorage
+        )
     }
     
     // MARK: - Flow Coordinator

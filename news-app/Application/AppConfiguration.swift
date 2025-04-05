@@ -8,6 +8,6 @@ import Foundation
 
 final class AppConfiguration {
     lazy var apiBaseURL: URL = URL(string: "https://newsapi.org")!
-    let cacheMaxAliveTimeInSecond: TimeInterval = 60 * 60
+    let cacheMaxAliveTimeInSecond: TimeInterval = 5 * 60
     let shouldLogNetworkRequest: Bool = true
 }

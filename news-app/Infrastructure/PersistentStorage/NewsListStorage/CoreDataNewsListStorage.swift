@@ -30,7 +30,42 @@ final class CoreDataNewsListStorage: NewsListStorage {
 
     // MARK: - Private
 
-    private func fetchNewsListPageRequest() -> {
-        NSFetchRequest<NewsListRepositoriesPageEntity>
+    private func fetchNewsPageRequest() -> NSFetchRequest<NewsPageEntity> {
+        
+        let request: NSFetchRequest = NewsPageEntity.fetchRequest()
+
+        return request
     }
+
+    private func deleteNewsListPageDto(in context: NSManagedObjectContext) {
+        
+        let request = fetchNewsPageRequest()
+        do {
+            if let result = try context.fetch(request).first {
+                context.delete(result)
+            }
+        } catch {
+            print(error)
+        }
+        
+    }
+
+    func getNewsListPageDto() async -> Result<NewsListStorageItem?, Error> {
+        await withCheckedContinuation { continuation in
+            coreDataStorage.performBackgroundTask { context in
+                do {
+                    let fetchRequest: NSFetchRequest = self.fetchNewsPageRequest()
+                    let entity = try context.fetch(fetchRequest).first
+                    
+                } catch {
+                    
+                }
+            }
+        }
+    }
+    
+    func save(newsResponseDto: NewsResponseDto) async {
+        
+    }
+    
 }
