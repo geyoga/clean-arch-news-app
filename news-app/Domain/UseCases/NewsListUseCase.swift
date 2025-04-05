@@ -8,18 +8,18 @@
 import Foundation
 
 protocol NewsListUseCase {
-    func fetchNewsList() async throws -> NewsPage
+    func fetchNewsList(cached: (NewsPage) -> Void) async throws -> NewsPage
 }
 
 final class DefaultNewsListUseCase: NewsListUseCase {
-    
+
     private let repository: NewsListRepository
-    
+
     init(repository: NewsListRepository) {
         self.repository = repository
     }
 
-    func fetchNewsList() async throws -> NewsPage {
-        try await repository.fetchNewsList()
+    func fetchNewsList(cached: (NewsPage) -> Void) async throws -> NewsPage {
+        return try await repository.fetchNewsList(cached: cached)
     }
 }

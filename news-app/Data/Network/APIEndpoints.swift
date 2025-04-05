@@ -36,6 +36,14 @@ struct APIEndpoints {
             )
         }
 
+        static func getImage(path: String) -> Endpoint<Data> {
+
+            return Endpoint(
+                path: path,
+                method: .get,
+                responseDecoder: RawDataResponseDecoder()
+            )
+        }
     }
 
 }
