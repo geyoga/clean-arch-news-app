@@ -35,11 +35,22 @@ final class AppDIContainer {
         return DefaultDataTransferService(with: apiDataNetwork)
     }()
 
+    lazy var imageDataTransferService: DataTransferService = {
+        let imageDataNetwork = DefaultNetworkService(
+            logger: DefaultNetworkLogger(
+                shouldLogRequests: appConfiguration.shouldLogNetworkRequest
+            )
+        )
+
+        return DefaultDataTransferService(with: imageDataNetwork)
+    }()
+
     // MARK: - DIContainers of feature
 
     func makeNewsListFeatureDIContainer() -> NewsListFeatureDIContainer {
         let dependencies = NewsListFeatureDIContainer.Dependencies(
             apiDataTransferService: apiDataTransferService,
+            imageDataTransferService: imageDataTransferService,
             appConfiguration: appConfiguration
         )
 

@@ -16,6 +16,7 @@ struct NewsListItemViewModel: Hashable {
         let title: String
         let source: NewsListSourceViewModel
         let description: String
+        let imageUrl: String
     }
     let news: NewsItemViewModel
     var isExpanded: Bool = false
@@ -27,7 +28,8 @@ extension NewsListItemViewModel {
             id: news.id,
             title: news.title,
             source: .init(name: news.source.name),
-            description: news.description
+            description: news.description,
+            imageUrl: news.imageUrl
         )
     }
 }

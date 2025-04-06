@@ -30,6 +30,13 @@ final class NewsListItemCell: UITableViewCell {
 
         return label
     }()
+    private lazy var newsImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.layer.cornerRadius = 10
+        imageView.layer.masksToBounds = true
+        return imageView
+    }()
 
     // MARK: - Life Cycles
     
@@ -56,15 +63,27 @@ final class NewsListItemCell: UITableViewCell {
     private func setupViewLayout() {
         contentView.addSubview(titleLabel)
         contentView.addSubview(descriptionLabel)
+        contentView.addSubview(newsImageView)
+
+        newsImageView.snp.makeConstraints { make in
+            make.top.equalToSuperview().inset(16)
+            make.width.equalTo(100)
+            make.height.equalTo(100)
+            make.trailing.equalToSuperview().inset(16)
+            make.bottom.lessThanOrEqualToSuperview().inset(16)
+        }
 
         titleLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
-            make.top.equalToSuperview().inset(12)
+            make.leading.equalToSuperview().inset(16)
+            make.top.equalToSuperview().inset(16)
+            make.trailing.equalTo(newsImageView.snp.leading).inset(-10)
         }
+
         descriptionLabel.snp.makeConstraints { make in
-            make.leading.trailing.equalToSuperview().inset(16)
+            make.leading.equalToSuperview().inset(16)
             make.top.equalTo(titleLabel.snp.bottom).inset(-8)
             make.bottom.equalToSuperview().inset(16)
+            make.trailing.equalTo(newsImageView.snp.leading).inset(-10)
         }
     }
 
@@ -73,11 +92,30 @@ final class NewsListItemCell: UITableViewCell {
 
         titleLabel.text = nil
         descriptionLabel.text = nil
+        newsImageView.image = nil
     }
 
-    internal func configure(with model: NewsListItemViewModel) {
+    internal func configure(
+        with model: NewsListItemViewModel,
+        imageRepository: ImageRepository
+    ) {
         
         titleLabel.text = model.news.title
         descriptionLabel.text = model.news.description
+        updateNewsImage(
+            imageRepository: imageRepository,
+            imageUrl: model.news.imageUrl
+        )
+    }
+
+    private func updateNewsImage(imageRepository: ImageRepository, imageUrl: String) {
+        newsImageView.image = nil
+        Task {
+            do {
+                let imageData = try await imageRepository.fetchImage(with: imageUrl)
+                newsImageView.image = UIImage(data: imageData)
+            } catch {}
+        }
+
     }
 }

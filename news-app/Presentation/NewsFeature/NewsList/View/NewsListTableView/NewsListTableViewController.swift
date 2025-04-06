@@ -28,6 +28,7 @@ final class NewsListTableViewController: UITableViewController {
     }
 
     private let viewModel: NewsListViewModel
+    private let imageRepository: ImageRepository
     private var registeredCellTypes: Set<String> = []
     private var cancellables = Set<AnyCancellable>()
     private var currentContent: NewsListContentViewModel = .emptyData
@@ -42,8 +43,11 @@ final class NewsListTableViewController: UITableViewController {
 
     // MARK: - Life Cycles
 
-    init(viewModel: NewsListViewModel) {
+    init(viewModel: NewsListViewModel,
+         imageRepository: ImageRepository
+    ) {
         self.viewModel = viewModel
+        self.imageRepository = imageRepository
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -130,7 +134,10 @@ extension NewsListTableViewController {
                 NewsListItemCell.self,
                 registeredCellTypes: &self.registeredCellTypes
             )
-            cell.configure(with: item)
+            cell.configure(
+                with: item,
+                imageRepository: imageRepository
+            )
             return cell
         case .emptyData:
             return UITableViewCell()

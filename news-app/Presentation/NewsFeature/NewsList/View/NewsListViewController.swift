@@ -13,16 +13,18 @@ final class NewsListViewController: UIViewController {
     // MARK: - Properties
 
     private var viewModel: NewsListViewModel
+    private let imageRepository: ImageRepository
     private var cancellables: Set<AnyCancellable> = .init()
     private lazy var tableController: NewsListTableViewController = {
-        let controller = NewsListTableViewController(viewModel: viewModel)
+        let controller = NewsListTableViewController(viewModel: viewModel, imageRepository: imageRepository)
 
         return controller
     }()
     
     // MARK: - Life Cycles
 
-    init(viewModel: NewsListViewModel) {
+    init(viewModel: NewsListViewModel, imageRepository: ImageRepository) {
+        self.imageRepository = imageRepository
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }

@@ -31,7 +31,7 @@ final class DefaultNetworkService: NetworkService {
     private let logger: NetworkLogger
 
     init(
-        config: NetworkConfigurable,
+        config: NetworkConfigurable = ApiDataNetworkConfig(),
         sessionManager: NetworkSessionManager = DefaultNetworkSessionManager(),
         logger: NetworkLogger
     ) {

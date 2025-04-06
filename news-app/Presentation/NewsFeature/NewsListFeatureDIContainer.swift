@@ -11,6 +11,7 @@ final class NewsListFeatureDIContainer: NewsListFlowCoordinatorDependencies {
 
     struct Dependencies {
         let apiDataTransferService: DataTransferService
+        let imageDataTransferService: DataTransferService
         let appConfiguration: AppConfiguration
     }
     
@@ -26,6 +27,7 @@ final class NewsListFeatureDIContainer: NewsListFlowCoordinatorDependencies {
                 .cacheMaxAliveTimeInSecond
         )
     )
+    lazy var imageCache: ImageStorage = CoreDataImageStorage(currentTime: { Date() })
 
     init(dependencies: Dependencies) {
         self.dependencies = dependencies
@@ -33,12 +35,21 @@ final class NewsListFeatureDIContainer: NewsListFlowCoordinatorDependencies {
 
     // MARK: - View Controller
     func makeNewsListViewController() -> NewsListViewController {
-        NewsListViewController(viewModel: makeNewsListViewModel())
+        NewsListViewController(
+            viewModel: makeNewsListViewModel(),
+            imageRepository: makeImageRepository()
+        )
     }
 
     // MARK: - View Model
     private func makeNewsListViewModel() -> NewsListViewModel {
         DefaultNewsListViewModel(newsListUsesCase: makeNewsListUseCase())
+    }
+    private func makeImageRepository() -> ImageRepository {
+        DefaultImageRepository(
+            dataTransferService: dependencies.imageDataTransferService,
+            imageCache: imageCache
+        )
     }
 
     // MARK: - Use Cases
