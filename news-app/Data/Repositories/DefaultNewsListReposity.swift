@@ -11,7 +11,7 @@ final class DefaultNewsListReposity: NewsListRepository {
 
     private let dataTransferService: DataTransferService
     private let cache: NewsListStorage
-    
+
     init(
         dataTransferService: DataTransferService,
         cache: NewsListStorage
@@ -22,17 +22,21 @@ final class DefaultNewsListReposity: NewsListRepository {
 
     func fetchNewsList() async throws -> NewsPage {
 
-        let cacheResult = await cache.getNewsListPageDto()
+        var cacheResult: NewsListStorageItem?
 
-        if case let .success(value) = cacheResult {
-            switch value {
-            case .upToDate(let newsResponseDto):
-                return newsResponseDto.toDomain()
-            case .outdated(_):
-                break
-            case nil:
-                break
-            }
+        do {
+            cacheResult = try await cache.getNewsListPageDto()
+        } catch {
+            print("⚠️ Cache fetch failed: \(error.localizedDescription)")
+        }
+
+        switch cacheResult {
+        case .upToDate(let newsResponseDto):
+            return newsResponseDto.toDomain()
+        case .outdated(_):
+            break
+        case nil:
+            break
         }
 
         try Task.checkCancellation()
@@ -41,7 +45,7 @@ final class DefaultNewsListReposity: NewsListRepository {
         let endpoint = APIEndpoints.News.getAll(requestQuery: request)
 
         let resultData = try await dataTransferService.request(with: endpoint)
-        await cache.save(newsResponseDto: resultData)
+        try await cache.save(newsResponseDto: resultData)
 
         return resultData.toDomain()
     }

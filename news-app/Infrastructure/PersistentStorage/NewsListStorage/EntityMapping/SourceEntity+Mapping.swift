@@ -12,6 +12,8 @@ enum MappingSourceEntityError: Error {
     case missingData
 }
 
+// MARK: - Mapping to Dto
+
 extension SourceEntity {
     func toDto() throws -> SourceDto {
         guard let id = id, let name = name else {
@@ -28,6 +30,8 @@ extension SourceEntity {
         )
     }
 }
+
+// MARK: - Mapping to CoreData Entity
 
 extension SourceDto {
     func toEntity(in context: NSManagedObjectContext) -> SourceEntity {

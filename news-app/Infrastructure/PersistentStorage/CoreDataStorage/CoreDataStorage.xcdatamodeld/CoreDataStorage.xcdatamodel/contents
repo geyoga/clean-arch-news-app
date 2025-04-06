@@ -6,10 +6,13 @@
         <attribute name="pathUrl" optional="YES" attributeType="String"/>
     </entity>
     <entity name="NewsEntity" representedClassName="NewsEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="author" optional="YES" attributeType="String"/>
+        <attribute name="content" optional="YES" attributeType="String"/>
         <attribute name="descriptionText" optional="YES" attributeType="String"/>
-        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="imageUrl" optional="YES" attributeType="String"/>
+        <attribute name="publishedAt" optional="YES" attributeType="String"/>
         <attribute name="title" optional="YES" attributeType="String"/>
+        <attribute name="url" optional="YES" attributeType="String"/>
         <relationship name="page" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="NewsPageEntity" inverseName="articles" inverseEntity="NewsPageEntity"/>
         <relationship name="source" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SourceEntity" inverseName="news" inverseEntity="SourceEntity"/>
     </entity>

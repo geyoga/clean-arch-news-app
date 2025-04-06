@@ -34,7 +34,7 @@ final class DefaultImageRepository: ImageRepository {
             return cachedImage
         }
         let imageData = try await dataTransferService.request(with: endpoint)
-        await imageCache.save(imageData: imageData, for: pathUrlWithPath)
+        try await imageCache.save(imageData: imageData, for: pathUrlWithPath)
 
         return imageData
     }

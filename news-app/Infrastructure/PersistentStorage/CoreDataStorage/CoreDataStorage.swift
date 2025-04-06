@@ -27,6 +27,7 @@ final class CoreDataStorage {
             }
         }
         return container
+
     }()
 
     // MARK: - Core Data Saving Support
