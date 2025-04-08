@@ -8,6 +8,8 @@
 import UIKit
 import Combine
 
+private typealias `Self` = NewsListViewController
+
 final class NewsListViewController: UIViewController {
 
     // MARK: - Properties
@@ -20,7 +22,13 @@ final class NewsListViewController: UIViewController {
 
         return controller
     }()
-    
+    private lazy var searchController: UISearchController = {
+        let controller = UISearchController(searchResultsController: nil)
+        controller.searchBar.delegate = self
+
+        return controller
+    }()
+
     // MARK: - Life Cycles
 
     init(viewModel: NewsListViewModel, imageRepository: ImageRepository) {
@@ -42,6 +50,11 @@ final class NewsListViewController: UIViewController {
         viewModel.viewDidLoad()
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        searchController.isActive = false
+    }
+
     // MARK: - Helpers
 
     private func bind(to viewModel: NewsListViewModel) {
@@ -60,11 +73,18 @@ final class NewsListViewController: UIViewController {
     }
 
     private func setupLocalizations() {
-        title = "News App"
-        navigationController?.navigationBar.prefersLargeTitles = true
+        title = "Daily News"
+        searchController.searchBar.placeholder = "Search News"
     }
 
     private func setupViewLayout() {
+
+        navigationController?.navigationBar.prefersLargeTitles = true
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
+
         addChild(tableController)
         tableController.view.frame = view.bounds
         view.addSubview(tableController.view)
@@ -97,5 +117,15 @@ final class NewsListViewController: UIViewController {
             )
         )
         present(alert, animated: true)
+    }
+}
+
+extension Self: UISearchResultsUpdating, UISearchBarDelegate {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let query = searchController.searchBar.text?.lowercased() else { return }
+        viewModel.didSearch(query: query)
+    }
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        viewModel.didCancelSearch()
     }
 }

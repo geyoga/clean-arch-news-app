@@ -13,6 +13,6 @@ enum NewsListStorageItem {
 }
 
 protocol NewsListStorage {
-    func getNewsListPageDto(for request: NewsRequestQuery) async throws -> NewsListStorageItem?
-    func save(newsResponseDto: NewsResponseDto) async throws
+    func getNewsListPageDto(for request: NewsRequestQueryDto) async throws -> NewsListStorageItem?
+    func save(for request: NewsRequestQueryDto, newsResponseDto: NewsResponseDto) async throws
 }

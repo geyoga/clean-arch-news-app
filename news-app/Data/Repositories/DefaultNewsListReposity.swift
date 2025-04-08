@@ -20,12 +20,13 @@ final class DefaultNewsListReposity: NewsListRepository {
         self.cache = cache
     }
 
-    func fetchNewsList() async throws -> NewsPage {
+    func fetchNewsList(query: String, page: Int) async throws -> NewsPage {
 
         var cacheResult: NewsListStorageItem?
+        let request = NewsRequestQueryDto(query: query, page: page)
 
         do {
-            cacheResult = try await cache.getNewsListPageDto()
+            cacheResult = try await cache.getNewsListPageDto(for: request)
         } catch {
             print("⚠️ Cache fetch failed: \(error.localizedDescription)")
         }
@@ -41,13 +42,21 @@ final class DefaultNewsListReposity: NewsListRepository {
 
         try Task.checkCancellation()
 
-        let request = NewsRequestQuery(query: "iOS")
         let endpoint = APIEndpoints.News.getAll(requestQuery: request)
 
         let resultData = try await dataTransferService.request(with: endpoint)
-        try await cache.save(newsResponseDto: resultData)
 
-        return resultData.toDomain()
+        if let _ = resultData.message {
+            if case let .outdated(dto) = cacheResult {
+                return dto.toDomain()
+            } else {
+                throw NetworkError.failed
+            }
+        } else {
+            try await cache.save(for: request, newsResponseDto: resultData)
+
+            return resultData.toDomain()
+        }
     }
 
 }

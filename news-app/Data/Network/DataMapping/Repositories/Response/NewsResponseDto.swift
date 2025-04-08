@@ -12,11 +12,17 @@ struct NewsResponseDto: Decodable {
     let totalResults: Int?
     let code: String?
     let message: String?
-    let articles: [NewsDto]
+    let articles: [NewsDto]?
+    let page: Int?
+    let query: String?
 }
 
 extension NewsResponseDto {
     func toDomain() -> NewsPage {
-        .init(items: articles.map({ $0.toDomain() }))
+        if let articles = articles {
+            return .init(items: articles.map({ $0.toDomain() }))
+        } else {
+            return NewsPage(items: [])
+        }
     }
 }

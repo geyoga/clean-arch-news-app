@@ -12,6 +12,9 @@ protocol NewsListViewModelInput {
     func viewDidLoad()
     func viewDidRefresh()
     func viewDidSelectItem(at index: Int)
+    func didSearch(query: String)
+    func didLoadNextPage()
+    func didCancelSearch()
 }
 
 protocol NewsListViewModelOutput {
@@ -28,11 +31,16 @@ final class DefaultNewsListViewModel: NewsListViewModel {
     private let newsListUsesCase: NewsListUseCase
     private(set) var items: [NewsListItemViewModel] = []
     private var cancellables = Set<AnyCancellable>()
+    private var currentPage: Int = 0
+    private var totalPageCount: Int = 1
+    private var hasMorePage: Bool { currentPage < totalPageCount }
+    private var nextPage: Int { hasMorePage ? currentPage + 1 : currentPage }
 
     // MARK: - Output
 
     private let contentSubject = CurrentValueSubject<NewsListContentViewModel, Never>(.emptyData)
     private let errorSubject = CurrentValueSubject<String, Never>("")
+    private let querySubject = CurrentValueSubject<String, Never>("")
 
     var content: AnyPublisher<NewsListContentViewModel, Never> {
         contentSubject.eraseToAnyPublisher()
@@ -46,26 +54,41 @@ final class DefaultNewsListViewModel: NewsListViewModel {
 
     init(newsListUsesCase: NewsListUseCase) {
         self.newsListUsesCase = newsListUsesCase
+        self.setupBindings()
     }
 
     // MARK: - Helpers
 
     private func reload() {
         resetData()
-        Task { await loadData() }
     }
 
     private func resetData() {
+        currentPage = 0
+        totalPageCount = 1
         items.removeAll()
         contentSubject.send(.emptyData)
     }
 
+    private func setupBindings() {
+        querySubject
+            .debounce(for: .milliseconds(500), scheduler: DispatchQueue.main)
+            .removeDuplicates()
+            .sink { [weak self] query in
+                guard let self = self, !query.isEmpty else { return }
+                Task { await self.loadNewsListData(query: query)}
+            }.store(in: &cancellables)
+    }
+
     @MainActor
-    private func loadData() {
+    private func loadNewsListData(query: String) {
         contentSubject.send(.loading)
+        querySubject.send(query)
         Task {
             do {
-                let result = try await newsListUsesCase.fetchNewsList()
+                let result = try await newsListUsesCase.fetchNewsList(
+                    request: .init(query: query, page: nextPage)
+                )
                 update(result)
             } catch {
                 handleError(error)
@@ -94,13 +117,11 @@ final class DefaultNewsListViewModel: NewsListViewModel {
 extension DefaultNewsListViewModel {
 
     func viewDidLoad() {
-        reload()
+
     }
 
     func viewDidRefresh() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3, execute: {
-            self.reload()
-        })
+
     }
     
     func viewDidSelectItem(at index: Int) {
@@ -109,5 +130,20 @@ extension DefaultNewsListViewModel {
         item.isExpanded.toggle()
         items[index] = item
         print(items[index].news.title)
+    }
+
+    func didSearch(query: String) {
+        guard !query.isEmpty else { return }
+        querySubject.send(query)
+    }
+
+    func didCancelSearch() {
+        querySubject.send("")
+        resetData()
+    }
+
+    func didLoadNextPage() {
+        guard hasMorePage else { return }
+        Task { await loadNewsListData(query: querySubject.value) }
     }
 }

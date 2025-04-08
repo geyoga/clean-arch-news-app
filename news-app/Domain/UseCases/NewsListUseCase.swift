@@ -8,7 +8,7 @@
 import Foundation
 
 protocol NewsListUseCase {
-    func fetchNewsList() async throws -> NewsPage
+    func fetchNewsList(request: NewsListUseCaseRequestValue) async throws -> NewsPage
 }
 
 final class DefaultNewsListUseCase: NewsListUseCase {
@@ -19,7 +19,12 @@ final class DefaultNewsListUseCase: NewsListUseCase {
         self.repository = repository
     }
 
-    func fetchNewsList() async throws -> NewsPage {
-        return try await repository.fetchNewsList()
+    func fetchNewsList(request: NewsListUseCaseRequestValue) async throws -> NewsPage {
+        return try await repository.fetchNewsList(query: request.query, page: request.page)
     }
+}
+
+struct NewsListUseCaseRequestValue {
+    let query: String
+    let page: Int
 }

@@ -28,7 +28,9 @@ extension NewsPageEntity {
                         throw MappingNewsPageEntityError.incorrectNewsEntity
                     }
                     return try entity.toDto()
-                }) ?? []
+                }) ?? [],
+            page: Int(page),
+            query: query
         )
     }
 }

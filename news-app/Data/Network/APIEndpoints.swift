@@ -19,7 +19,7 @@ struct APIEndpoints {
                 queryParametersEncodable: requestQuery
             )
         }
-        static func getAll(requestQuery: NewsRequestQuery) -> Endpoint<NewsResponseDto> {
+        static func getAll(requestQuery: NewsRequestQueryDto) -> Endpoint<NewsResponseDto> {
 
             return Endpoint(
                 path: "v2/everything",

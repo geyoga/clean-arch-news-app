@@ -17,6 +17,8 @@
         <relationship name="source" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SourceEntity" inverseName="news" inverseEntity="SourceEntity"/>
     </entity>
     <entity name="NewsPageEntity" representedClassName="NewsPageEntity" syncable="YES" codeGenerationType="class">
+        <attribute name="page" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="query" optional="YES" attributeType="String"/>
         <attribute name="savedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <relationship name="articles" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="NewsEntity" inverseName="page" inverseEntity="NewsEntity"/>
     </entity>

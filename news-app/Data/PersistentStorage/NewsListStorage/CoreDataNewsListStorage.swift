@@ -30,18 +30,21 @@ final class CoreDataNewsListStorage: NewsListStorage {
 
     // MARK: - Private
 
-    private func fetchNewsPageRequest() -> NSFetchRequest<NewsPageEntity> {
+    private func fetchNewsPageRequest(for requestDto: NewsRequestQueryDto) -> NSFetchRequest<NewsPageEntity> {
         let request: NSFetchRequest = NewsPageEntity.fetchRequest()
         request.predicate = NSPredicate(format: "%K = %@ AND %K = %d",
-                                        #keyPath(NewsEntity.query), requestDto.query,
-                                        #keyPath(NewsEntity.page), requestDto.page
+                                        #keyPath(NewsPageEntity.query), requestDto.query,
+                                        #keyPath(NewsPageEntity.page), requestDto.page
         )
 
         return request
     }
 
-    private func deleteNewsListPageDto(in context: NSManagedObjectContext) {
-        let request = fetchNewsPageRequest()
+    private func deleteNewsListPageDto(
+        for requestDto: NewsRequestQueryDto,
+        in context: NSManagedObjectContext
+    ) {
+        let request = fetchNewsPageRequest(for: requestDto)
         do {
             if let result = try context.fetch(request).first {
                 context.delete(result)
@@ -51,11 +54,11 @@ final class CoreDataNewsListStorage: NewsListStorage {
         }
     }
 
-    func getNewsListPageDto() async throws -> NewsListStorageItem? {
+    func getNewsListPageDto(for request: NewsRequestQueryDto) async throws -> NewsListStorageItem? {
         try await withCheckedThrowingContinuation { continuation in
             coreDataStorage.performBackgroundTask { context in
                 do {
-                    let fetchRequest: NSFetchRequest = self.fetchNewsPageRequest()
+                    let fetchRequest: NSFetchRequest = self.fetchNewsPageRequest(for: request)
                     let entity = try context.fetch(fetchRequest).first
                     let entityDto = try entity?.toDto()
 
@@ -71,16 +74,18 @@ final class CoreDataNewsListStorage: NewsListStorage {
             }
         }
     }
-    
-    func save(newsResponseDto: NewsResponseDto) async throws {
+
+    func save(for request: NewsRequestQueryDto, newsResponseDto: NewsResponseDto) async throws {
         try await withCheckedThrowingContinuation { continuation in
             coreDataStorage.performBackgroundTask { context in
                 do {
-                    self.deleteNewsListPageDto(in: context)
+                    self.deleteNewsListPageDto(for: request, in: context)
 
                     let entity = newsResponseDto.toEntity(in: context)
                     entity.savedAt = self.currentTime()
-                    
+                    entity.page = Int32(request.page)
+                    entity.query = request.query
+
                     try context.save()
                     continuation.resume()
                 } catch {
