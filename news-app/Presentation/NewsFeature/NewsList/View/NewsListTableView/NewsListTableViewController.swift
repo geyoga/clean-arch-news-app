@@ -24,11 +24,13 @@ final class NewsListTableViewController: UITableViewController {
     private enum Cell: Hashable {
         case item(NewsListItemViewModel)
         case emptyData
-        case loading(index: Int)
+        case loadingShimmer(index: Int)
+        case loadingSpinner
     }
 
     private let viewModel: NewsListViewModel
     private let imageRepository: ImageRepository
+    private var nextPageLoadingSpinner: UIActivityIndicatorView?
     private var registeredCellTypes: Set<String> = []
     private var cancellables = Set<AnyCancellable>()
     private var currentContent: NewsListContentViewModel = .emptyData
@@ -50,7 +52,7 @@ final class NewsListTableViewController: UITableViewController {
         self.imageRepository = imageRepository
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -98,18 +100,20 @@ final class NewsListTableViewController: UITableViewController {
 
     internal func updateItems() {
         var snapshot = NSDiffableDataSourceSnapshot<Section, Cell>()
-    
+
         snapshot.appendSections([.main])
         switch self.currentContent {
         case .items(let array):
             snapshot.appendItems(array.map({ .item($0) }), toSection: .main)
         case .emptyData:
             snapshot.appendItems([.emptyData], toSection: .main)
-        case .loading:
+        case .loadingShimmer:
             let loadingItems: [Cell] = (0..<Constants.numberOfLoadingShimmeringCells).map {
-                .loading(index: $0)
+                .loadingShimmer(index: $0)
             }
             snapshot.appendItems(loadingItems, toSection: .main)
+        case .loadingSpinner:
+            snapshot.appendItems([.loadingSpinner], toSection: .main)
         }
 
         self.tableViewDataSource.apply(snapshot, animatingDifferences: false)
@@ -141,7 +145,9 @@ extension NewsListTableViewController {
             return cell
         case .emptyData:
             return UITableViewCell()
-        case .loading:
+        case .loadingShimmer:
+            return UITableViewCell()
+        case .loadingSpinner:
             return UITableViewCell()
         }
     }

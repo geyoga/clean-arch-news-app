@@ -82,7 +82,7 @@ final class DefaultNewsListViewModel: NewsListViewModel {
 
     @MainActor
     private func loadNewsListData(query: String) {
-        contentSubject.send(.loading)
+        contentSubject.send(.loadingShimmer)
         querySubject.send(query)
         Task {
             do {

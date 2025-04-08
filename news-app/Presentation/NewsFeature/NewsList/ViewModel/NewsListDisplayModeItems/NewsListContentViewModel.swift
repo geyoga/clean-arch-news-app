@@ -10,5 +10,6 @@ import Foundation
 enum NewsListContentViewModel: Hashable {
     case items([NewsListItemViewModel])
     case emptyData
-    case loading
+    case loadingShimmer
+    case loadingSpinner
 }
